@@ -1,6 +1,7 @@
 import streamlit as st
 import vcf
 import requests
+import os
 
 # ฟังก์ชันในการเรียกใช้ ClinVar API
 def get_clinvar_info(variant_id):
@@ -21,7 +22,7 @@ def read_vcf(file_path):
 
 # วิเคราะห์ข้อมูลและประเมินความเสี่ยง
 def analyze_variants(variants):
-    amd_snps = ['rs10490924', 'rs1061170']  # SNP ที่เกี่ยวข้องกับโรค AMD
+    amd_snps = ['rs10490924', 'rs1061170']
     results = []
 
     for variant in variants:
@@ -35,33 +36,36 @@ def analyze_variants(variants):
                 })
     return results
 
-# หน้าหลักของแอป Streamlit
+# หน้าหลัก
 def main():
-    st.title('AMD Risk Assessment Tool')
+    st.title('VCF File Analysis')
 
-    uploaded_file = st.file_uploader("Upload VCF File", type=['vcf', 'txt'])
-
+    uploaded_file = st.file_uploader("Upload VCF file", type=["vcf"])
     if uploaded_file is not None:
-        # บันทึกไฟล์ที่อัปโหลด
-        with open('uploaded.vcf', 'wb') as f:
-            f.write(uploaded_file.getvalue())
+        # Save file
+        file_path = os.path.join('uploads', uploaded_file.name)
+        with open(file_path, 'wb') as f:
+            f.write(uploaded_file.read())
 
-        st.write("File uploaded successfully.")
-
-        # อ่านไฟล์ .VCF และประมวลผล
-        variants = read_vcf('uploaded.vcf')
+        # Read VCF file and analyze variants
+        variants = read_vcf(file_path)
         results = analyze_variants(variants)
 
-        # ประเมินความเสี่ยง
+        # Evaluate risk
         risk = "No risk detected"
         for result in results:
             if result['Genotype'] in ['1/1', '1/0', '0/1']:
                 risk = "At risk"
+                break
 
-        # แสดงผลลัพธ์
-        st.write(f"Risk: {risk}")
+        # Display results
+        st.subheader("Analysis Results:")
+        st.write(f"Risk Assessment: {risk}")
         st.write("Details:")
-        st.write(results)
+        for result in results:
+            st.write(f"- SNP: {result['SNP']}")
+            st.write(f"  ClinVar Info: {result['ClinVar']}")
+            st.write(f"  Genotype: {result['Genotype']}")
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,3 @@
 streamlit
-numpy
-opencv-python
-vcf
+vcfpy
 requests
