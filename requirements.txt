@@ -1,4 +1,4 @@
 streamlit
 wheel
-PyVCF
+PyVCF==0.6.8
 requests
