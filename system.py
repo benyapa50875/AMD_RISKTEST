@@ -30,11 +30,11 @@ def analyze_variants(variants):
     results = []
 
     for variant in variants:
-        if variant.id in amd_snps:  # ใช้ variant.id แทน variant.ID
-            clinvar_info = get_clinvar_info(variant.id)
+        if variant.ID in amd_snps:  # ใช้ variant.ID เพื่อเข้าถึง ID ของ SNP
+            clinvar_info = get_clinvar_info(variant.ID)
             if clinvar_info:
                 results.append({
-                    'SNP': variant.id,
+                    'SNP': variant.ID,
                     'ClinVar': clinvar_info,
                     'Genotype': variant.samples[0].data.get('GT')  # ดึง Genotype จาก sample แรก
                 })
