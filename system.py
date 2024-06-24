@@ -15,10 +15,13 @@ def get_clinvar_info(variant_id):
 # อ่านไฟล์ .VCF
 def read_vcf(file_path):
     vcf_reader = vcfpy.Reader.from_path(file_path)
+
+    print(vcf_reader)
+    
     variants = []
-    for record in vcf_reader:
-        variants.append(record)
-    return variants
+    # for record in vcf_reader:
+    #     variants.append(record)
+    # return variants
 
 # วิเคราะห์ข้อมูลและประเมินความเสี่ยง
 def analyze_variants(variants):
