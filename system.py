@@ -1,5 +1,5 @@
 import streamlit as st
-import vcf
+import vcfpy
 import requests
 import os
 
