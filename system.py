@@ -36,30 +36,32 @@ def analyze_variants(variants):
                 })
     return results
 
+
 def main():
     st.title('VCF File Analysis')
 
     if not os.path.exists('uploads'):
         os.makedirs('uploads')
-
+    
     uploaded_file = st.file_uploader("Upload VCF file", type=["vcf"])
     if uploaded_file is not None:
-        
+        # Save file
         file_path = os.path.join('uploads', uploaded_file.name)
         with open(file_path, 'wb') as f:
             f.write(uploaded_file.read())
 
-        # อ่านไฟล์ VCF และวิเคราะห์ข้อมูล
+        # Read VCF file 
         variants = read_vcf(file_path)
         results = analyze_variants(variants)
 
-        # ประเมินความเสี่ยง -------------------------------------------------- แก้ด้วย รอ research จาก dome
+        # Evaluate risk
         risk = "No risk detected"
         for result in results:
             if result['Genotype'] in ['1/1', '1/0', '0/1']:
                 risk = "At risk"
                 break
 
+        # Display results
         st.subheader("Analysis Results:")
         st.write(f"Risk Assessment: {risk}")
         st.write("Details:")
