@@ -60,7 +60,7 @@ def main():
         # Evaluate risk
         risk = "No risk detected"
         for result in results:
-            if result['Genotype'] in ['1/1', '1/0', '0/1']:
+            if result['Genotype'] in ['1/1', '1/0', '0/1']: #Waiting for Research
                 risk = "At risk"
                 break
 
