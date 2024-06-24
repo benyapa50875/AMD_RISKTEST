@@ -1,5 +1,5 @@
 streamlit
 wheel
 setuptools<58
-vcfpy
+PyVCF
 requests

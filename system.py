@@ -1,9 +1,9 @@
 import streamlit as st
-import vcfpy
+import vcf
 import requests
 import os
 
-# ClinVar API
+# ฟังก์ชันในการเรียกใช้ ClinVar API
 def get_clinvar_info(variant_id):
     url = f'https://api.ncbi.nlm.nih.gov/variation/v0/beta/refsnp/{variant_id}'
     response = requests.get(url)
@@ -12,17 +12,13 @@ def get_clinvar_info(variant_id):
     else:
         return None
 
-# อ่านไฟล์ .VCF ด้วย vcfpy
+# อ่านไฟล์ .VCF
 def read_vcf(file_path):
-    try:
-        variants = []
-        with vcfpy.Reader.from_path(file_path) as reader:
-            for record in reader:
-                variants.append(record)
-        return variants
-    except Exception as e:
-        st.error(f"Error reading VCF file: {e}")
-        return None
+    vcf_reader = vcf.Reader(open(file_path, 'r'))
+    variants = []
+    for record in vcf_reader:
+        variants.append(record)
+    return variants
 
 # วิเคราะห์ข้อมูลและประเมินความเสี่ยง
 def analyze_variants(variants):
@@ -30,19 +26,21 @@ def analyze_variants(variants):
     results = []
 
     for variant in variants:
-        if variant.ID in amd_snps:  # ใช้ variant.ID เพื่อเข้าถึง ID ของ SNP
+        if variant.ID in amd_snps:
             clinvar_info = get_clinvar_info(variant.ID)
             if clinvar_info:
                 results.append({
                     'SNP': variant.ID,
                     'ClinVar': clinvar_info,
-                    'Genotype': variant.samples[0].data.get('GT')  # ดึง Genotype จาก sample แรก
+                    'Genotype': variant.genotype('Sample1').data.GT
                 })
     return results
 
+# หน้าหลักของแอป
 def main():
     st.title('VCF File Analysis')
 
+    # สร้างโฟลเดอร์ uploads หากไม่มี
     if not os.path.exists('uploads'):
         os.makedirs('uploads')
 
@@ -53,29 +51,25 @@ def main():
         with open(file_path, 'wb') as f:
             f.write(uploaded_file.read())
 
-        # อ่านไฟล์ VCF ด้วย vcfpy และวิเคราะห์ข้อมูล
+        # อ่านไฟล์ VCF และวิเคราะห์ข้อมูล
         variants = read_vcf(file_path)
-        
-        if variants is not None:
-            results = analyze_variants(variants)
+        results = analyze_variants(variants)
 
-            # ประเมินความเสี่ยง
-            risk = "No risk detected"
-            for result in results:
-                if result['Genotype'] in ['1/1', '1/0', '0/1']:
-                    risk = "At risk"
-                    break
+        # ประเมินความเสี่ยง
+        risk = "No risk detected"
+        for result in results:
+            if result['Genotype'] in ['1/1', '1/0', '0/1']:
+                risk = "At risk"
+                break
 
-            # แสดงผลลัพธ์
-            st.subheader("Analysis Results:")
-            st.write(f"Risk Assessment: {risk}")
-            st.write("Details:")
-            for result in results:
-                st.write(f"- SNP: {result['SNP']}")
-                st.write(f"  ClinVar Info: {result['ClinVar']}")
-                st.write(f"  Genotype: {result['Genotype']}")
-        else:
-            st.error("Failed to read VCF file. Please upload a valid VCF file.")
+        # แสดงผลลัพธ์
+        st.subheader("Analysis Results:")
+        st.write(f"Risk Assessment: {risk}")
+        st.write("Details:")
+        for result in results:
+            st.write(f"- SNP: {result['SNP']}")
+            st.write(f"  ClinVar Info: {result['ClinVar']}")
+            st.write(f"  Genotype: {result['Genotype']}")
 
 if __name__ == '__main__':
     main()
