@@ -3,7 +3,7 @@ import vcfpy
 import requests
 import os
 
-# ฟังก์ชันในการเรียกใช้ ClinVar API
+# ClinVar API
 def get_clinvar_info(variant_id):
     url = f'https://api.ncbi.nlm.nih.gov/variation/v0/beta/refsnp/{variant_id}'
     response = requests.get(url)
@@ -36,29 +36,30 @@ def analyze_variants(variants):
                 })
     return results
 
-# หน้าหลัก
 def main():
     st.title('VCF File Analysis')
 
+    if not os.path.exists('uploads'):
+        os.makedirs('uploads')
+
     uploaded_file = st.file_uploader("Upload VCF file", type=["vcf"])
     if uploaded_file is not None:
-        # Save file
+        
         file_path = os.path.join('uploads', uploaded_file.name)
         with open(file_path, 'wb') as f:
             f.write(uploaded_file.read())
 
-        # Read VCF file and analyze variants
+        # อ่านไฟล์ VCF และวิเคราะห์ข้อมูล
         variants = read_vcf(file_path)
         results = analyze_variants(variants)
 
-        # Evaluate risk
+        # ประเมินความเสี่ยง -------------------------------------------------- แก้ด้วย รอ research จาก dome
         risk = "No risk detected"
         for result in results:
             if result['Genotype'] in ['1/1', '1/0', '0/1']:
                 risk = "At risk"
                 break
 
-        # Display results
         st.subheader("Analysis Results:")
         st.write(f"Risk Assessment: {risk}")
         st.write("Details:")
