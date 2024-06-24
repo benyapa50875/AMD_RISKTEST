@@ -14,7 +14,7 @@ def get_clinvar_info(variant_id):
 
 # อ่านไฟล์ .VCF
 def read_vcf(file_path):
-    vcf_reader = vcf.Reader(open(file_path, 'r'))
+    vcf_reader = vcfpy.Reader.from_path(file_path)
     variants = []
     for record in vcf_reader:
         variants.append(record)
@@ -32,7 +32,7 @@ def analyze_variants(variants):
                 results.append({
                     'SNP': variant.ID,
                     'ClinVar': clinvar_info,
-                    'Genotype': variant.genotype('Sample1').data.GT
+                    'Genotype': variant.genotypes['Sample1'].alleles
                 })
     return results
 
