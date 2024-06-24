@@ -1,4 +1,5 @@
 streamlit
 wheel
-PyVCF==0.6.8
+setuptools<58
+PyVCF
 requests
