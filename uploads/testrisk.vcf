@@ -1,0 +1,8 @@
+##fileformat=VCFv4.2
+##FILTER=<ID=PASS,Description="All filters passed">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+##INFO=<ID=ANN,Number=.,Type=String,Description="Consequence annotations from VEP">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+#CHROM  POS     ID          REF     ALT     QUAL    FILTER  INFO    FORMAT  Sample1
+1       1959125 rs10490924  C       T       .       PASS    AF=0.25;ANN=T|intergenic_region|MODIFIER     GT      0/1
+1       1960234 rs1061170   G       A       .       PASS    AF=0.2;ANN=A|missense_variant|MODERATE        GT      1/1

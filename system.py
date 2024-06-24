@@ -1,5 +1,5 @@
 import streamlit as st
-import vcfpy
+import vcf
 import requests
 import os
 
@@ -47,6 +47,9 @@ def main():
     if uploaded_file is not None:
         # Save file
         file_path = os.path.join('uploads', uploaded_file.name)
+
+        print(file_path)
+
         with open(file_path, 'wb') as f:
             f.write(uploaded_file.read())
 
@@ -69,6 +72,7 @@ def main():
             st.write(f"- SNP: {result['SNP']}")
             st.write(f"  ClinVar Info: {result['ClinVar']}")
             st.write(f"  Genotype: {result['Genotype']}")
+
 
 if __name__ == '__main__':
     main()
